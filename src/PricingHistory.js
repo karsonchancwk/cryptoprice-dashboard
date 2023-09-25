@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
 import csvFile from "./frontend_dataset/coin_Aave.csv";
+import csvFile2 from "./frontend_dataset/*.csv";
 import Plot from "react-plotly.js";
 
 export default function PricingHistory() {
   const [data, setData] = useState([]);
   const f = async () => {
-    const res = Papa.parse(csvFile, {
+    Papa.parse(csvFile, {
       header: true,
       download: true,
       complete: function (results) {
@@ -23,12 +24,11 @@ export default function PricingHistory() {
       <Plot
         data={[
           {
-            x: [1, 2, 3],
-            y: [2, 6, 3],
+            x: data.map((i) => i.Date),
+            y: data.map((i) => i.Close),
             type: "scatter",
             marker: { color: "red" },
           },
-          { type: "bar", x: [1, 2, 3], y: [2, 5, 3] },
         ]}
         // layout={{ width: 320, height: 240, title: "A Fancy Plot" }}
       />
