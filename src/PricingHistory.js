@@ -52,7 +52,7 @@ const layout = {
     autorange: true,
     type: "log",
   },
-  height: 550,
+  height: 600,
   width: "max-width",
 };
 
