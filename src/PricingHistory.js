@@ -32,6 +32,30 @@ const colors = {
   XRP: "#218380",
 };
 
+// info about the graph
+const layout = {
+  title: "Price History",
+  xaxis: {
+    // autorange: true,
+    range: ["2013-04-29", "2021-07-06"],
+    rangeselector: {
+      buttons: [
+        { count: 10, step: "day", label: "1 Day", stepmode: "backward" },
+        { count: 3, step: "month", label: "3 Months", stepmode: "backward" },
+        { count: 1, step: "year", label: "1 Year", stepmode: "backward" },
+      ],
+    },
+    rangeslider: { range: ["2013-04-29", "2021-07-06"] },
+    type: "date",
+  },
+  yaxis: {
+    autorange: true,
+    type: "log",
+  },
+  height: 550,
+  width: "max-width",
+};
+
 // TODO:
 // make the graph exp
 // adjust time horizons
@@ -59,24 +83,27 @@ export default function PricingHistory() {
 
   return (
     <>
-      <button onClick={() => console.log(data)}>What is data</button>
+      {/* <button onClick={() => console.log(data)}>What is data</button> */}
       <div className="d-flex">
-        <div>
+        <div className="flex-grow-1">
           <Plot
             data={selectedCoins.map((coin) =>
               Object({
                 x: data[coin].map((i) => i.Date),
                 y: data[coin].map((i) => i.Close),
-                type: "scatter",
+                yaxis: "10^y",
+                type: "line",
+                name: coin,
                 marker: {
                   color: colors[Math.floor(Math.random() * colors.length)],
                 },
               })
             )}
-            // layout={{ width: 320, height: 240, title: "A Fancy Plot" }}
+            layout={layout}
           />
-          <ButtonGroup></ButtonGroup>
         </div>
+
+        {/* Select your coin */}
         <Form
           onChange={(c) => {
             console.log(c.target.id); // the coin symbol
@@ -88,7 +115,11 @@ export default function PricingHistory() {
             );
           }}
         >
-          <ListGroup title="Select your coin" variant="primary">
+          <ListGroup
+            variant="primary"
+            style={{ height: 400, overflowY: "scroll" }}
+            className="mb-3"
+          >
             {AllCoins.map((i) => (
               <ListGroup.Item>
                 <Form.Check

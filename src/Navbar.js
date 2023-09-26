@@ -1,5 +1,6 @@
 import React from "react";
 import Nav from "react-bootstrap/Nav";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
@@ -17,10 +18,14 @@ function Navbar() {
         </h1>
         <Nav activeKey="/pricingHistory" className="d-flex">
           <Nav.Item>
-            <Nav.Link href="/pricingHistory">Pricing History</Nav.Link>
+            <Nav.Link as={Link} to="/pricingHistory">
+              Pricing History
+            </Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link href="/myPortfolio">My Portfolio</Nav.Link>
+            <Nav.Link as={Link} to="/myPortfolio">
+              My Portfolio
+            </Nav.Link>
           </Nav.Item>
         </Nav>
       </div>
