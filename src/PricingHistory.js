@@ -32,6 +32,11 @@ const colors = {
   XRP: "#218380",
 };
 
+// TODO:
+// make the graph exp
+// adjust time horizons
+// scroll down for the list box
+
 export default function PricingHistory() {
   const [data, setData] = useState({});
   const [selectedCoins, setSelectedCoins] = useState([]); // the symbols of the checked coin
@@ -84,9 +89,6 @@ export default function PricingHistory() {
           }}
         >
           <ListGroup title="Select your coin" variant="primary">
-            <ListGroup.Item as={Button} onClick={() => setSelectedCoins([])}>
-              Uncheck all
-            </ListGroup.Item>
             {AllCoins.map((i) => (
               <ListGroup.Item>
                 <Form.Check
@@ -98,6 +100,7 @@ export default function PricingHistory() {
               </ListGroup.Item>
             ))}
           </ListGroup>
+          <Button onClick={() => setSelectedCoins([])}>Uncheck all</Button>
         </Form>
       </div>
     </>
