@@ -3,8 +3,9 @@ import { ListGroup, Form, Button, ButtonGroup } from "react-bootstrap";
 import Papa from "papaparse";
 import Plot from "react-plotly.js";
 
-import CSVs from "./frontend_dataset/CSVs";
+// import CSVs from "./frontend_dataset/CSVs";
 import AllCoins from "./frontend_dataset/summary.json";
+import data from "./frontend_dataset/AllPrices.json";
 
 const colors = {
   AAVE: "#8ecae6",
@@ -62,28 +63,27 @@ const layout = {
 // scroll down for the list box
 
 export default function PricingHistory() {
-  const [data, setData] = useState({});
   const [selectedCoins, setSelectedCoins] = useState([]); // the symbols of the checked coin
 
-  useEffect(() => {
-    AllCoins.map((i) =>
-      Papa.parse(CSVs[i.Symbol], {
-        header: true,
-        download: true,
-        complete: (r) => {
-          if (r?.data) {
-            let temp = data;
-            temp[i.Symbol] = r.data;
-            setData(temp);
-          }
-        },
-      })
-    );
-  }, []);
+  // useEffect(() => {
+  //   AllCoins.map((i) =>
+  //     Papa.parse(CSVs[i.Symbol], {
+  //       header: true,
+  //       download: true,
+  //       complete: (r) => {
+  //         if (r?.data) {
+  //           let temp = data;
+  //           temp[i.Symbol] = r.data;
+  //           setData(temp);
+  //         }
+  //       },
+  //     })
+  //   );
+  // }, []);
 
   return (
     <>
-      {/* <button onClick={() => console.log(data)}>What is data</button> */}
+      <button onClick={() => console.log(data)}>What is data</button>
       <div className="d-flex">
         <div className="flex-grow-1">
           <Plot
@@ -94,9 +94,7 @@ export default function PricingHistory() {
                 yaxis: "10^y",
                 type: "line",
                 name: coin,
-                marker: {
-                  color: colors[Math.floor(Math.random() * colors.length)],
-                },
+                marker: { color: colors[coin] },
               })
             )}
             layout={layout}
