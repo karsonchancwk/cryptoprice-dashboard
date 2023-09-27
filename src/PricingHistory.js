@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ListGroup, Form, Button, ButtonGroup } from "react-bootstrap";
-import Papa from "papaparse";
+import React, { useState } from "react";
+import { ListGroup, Form, Button } from "react-bootstrap";
 import Plot from "react-plotly.js";
 
 // import CSVs from "./frontend_dataset/CSVs";
@@ -56,11 +55,6 @@ const layout = {
   height: 600,
   width: "max-width",
 };
-
-// TODO:
-// make the graph exp
-// adjust time horizons
-// scroll down for the list box
 
 export default function PricingHistory() {
   const [selectedCoins, setSelectedCoins] = useState([]); // the symbols of the checked coin
