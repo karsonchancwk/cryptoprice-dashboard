@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Card, Form, InputGroup, Button, ButtonGroup } from "react-bootstrap";
+import {
+  Card,
+  Form,
+  InputGroup,
+  Button,
+  ButtonGroup,
+  ListGroup,
+  Tooltip,
+  OverlayTrigger,
+} from "react-bootstrap";
 import { Table, Tag } from "antd";
 
 import AllCoins from "./frontend_dataset/summary.json";
@@ -29,19 +38,16 @@ function MyPortfolio() {
       key: "txrate",
       render: (r) => `1 ${r.coin} = ${r.priceUSD.toFixed(4)} USD`,
     },
-    {
-      title: "Transaction Amount",
-      key: "txamt",
-      render: (r) => `${r.txAmtUSD.toFixed(4)} USD`,
-    },
+    // {
+    //   title: "Transaction Amount",
+    //   key: "txamt",
+    //   render: (r) => `${r.txAmtUSD.toFixed(4)} USD`,
+    // },
   ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(
-    //   new Date(AllPrices[txLog.coin][0].Date).toDateString() ===
-    //     new Date(txLog.txdate).toDateString()
-    // );
+
     if (txLog.coin === "") alert("Please select your coin");
     else if (parseFloat(txLog.amount) <= 0.0 || isNaN(parseFloat(txLog.amount)))
       alert("Please enter a valid amount");
@@ -52,7 +58,6 @@ function MyPortfolio() {
         .includes(new Date(txLog.txdate).toDateString())
     )
       alert("Please enter a valid transaction date");
-    // console.log();
     else {
       var txdate = new Date(txLog.txdate).toDateString();
       var priceUSD = parseFloat(
@@ -62,105 +67,161 @@ function MyPortfolio() {
       );
       var amount = parseFloat(txLog.amount);
       setRecord((p) => [
-        ...p,
         {
           action: txLog.action,
           coin: txLog.coin,
           amount,
           txdate,
           priceUSD,
-          txAmtUSD: priceUSD * amount,
+          // txAmtUSD: priceUSD * amount,
         },
+        ...p,
       ]);
     }
   };
 
   return (
     <div>
-      <div className="d-flex">
+      <div className="d-flex gap-4">
         <Button onClick={() => console.log(record)}>Record</Button>
-        {/* <Plotly /> onChange={(c) => console.log(c)}*/}
-        <Card>
-          <Card.Header as="h5">Input your Buy&Sell Record</Card.Header>
-          <Card.Body>
+        <div className="flex-grow-1">
+          {/* Input field */}
+          <Card className="mb-4">
+            <Card.Header as="h5">Input your Buy&Sell Record</Card.Header>
             <Form onSubmit={handleSubmit}>
-              {/* Buy or sell */}
-              <ButtonGroup
-                onClick={(e) =>
-                  setTxLog((p) => ({ ...p, action: e.target.id === "buy" }))
-                }
-              >
-                <Button id="buy" variant={txLog?.action ? "primary" : "light"}>
-                  Buy
-                </Button>
-                <Button id="sell" variant={txLog?.action ? "light" : "primary"}>
-                  Sell
-                </Button>
-              </ButtonGroup>
+              <Card.Body className="d-flex flex-wrap gap-3 p-4">
+                {/* Buy or sell */}
 
-              {/* Currency & amt */}
-              <InputGroup hasValidation>
-                {/* Currency */}
-                <Form.Select
-                  id="coin"
-                  value={txLog?.coin}
-                  onChange={(e) =>
-                    setTxLog((p) => ({ ...p, [e.target.id]: e.target.value }))
+                <ButtonGroup
+                  onClick={(e) =>
+                    setTxLog((p) => ({ ...p, action: e.target.id === "buy" }))
                   }
                 >
-                  <option value="">Select your currency</option>
-                  {AllCoins.map((i) => (
-                    <option value={i.Symbol}>
-                      {i.Name} ({i.Symbol})
-                    </option>
-                  ))}
-                </Form.Select>
+                  <Button
+                    id="buy"
+                    variant={txLog?.action ? "primary" : "light"}
+                  >
+                    Buy
+                  </Button>
+                  <Button
+                    id="sell"
+                    variant={txLog?.action ? "light" : "primary"}
+                  >
+                    Sell
+                  </Button>
+                </ButtonGroup>
 
-                {/* Amt */}
-                <Form.Control
-                  placeholder="0.00"
-                  id="amount"
-                  value={txLog?.amount}
-                  onChange={(e) =>
-                    setTxLog((p) => ({
-                      ...p,
-                      [e.target.id]: e.target.value,
-                    }))
-                  }
-                />
-              </InputGroup>
+                {/* Currency & amt */}
+                <InputGroup hasValidation style={{ width: "fit-content" }}>
+                  {/* Currency */}
+                  <Form.Select
+                    id="coin"
+                    value={txLog?.coin}
+                    onChange={(e) =>
+                      setTxLog((p) => ({
+                        ...p,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Select your currency</option>
+                    {AllCoins.map((i) => (
+                      <option value={i.Symbol}>
+                        {i.Name} ({i.Symbol})
+                      </option>
+                    ))}
+                  </Form.Select>
 
-              {/* Tx date */}
+                  {/* Amt */}
+                  <Form.Control
+                    placeholder="0.00"
+                    id="amount"
+                    value={txLog?.amount}
+                    onChange={(e) =>
+                      setTxLog((p) => ({
+                        ...p,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </InputGroup>
 
-              <Form.Control
-                id="txdate"
-                type="date"
-                value={txLog?.txdate}
-                placeholder="Transaction date"
-                onChange={(e) =>
-                  setTxLog((p) => ({
-                    ...p,
-                    [e.target.id]: e.target.value,
-                  }))
-                }
-              />
+                {/* Tx date */}
+                <OverlayTrigger
+                  placement="top"
+                  overlay={(props) => (
+                    <Tooltip {...props}>Transaction date</Tooltip>
+                  )}
+                >
+                  <Form.Control
+                    id="txdate"
+                    type="date"
+                    value={txLog?.txdate}
+                    className="me-auto"
+                    style={{ width: "fit-content" }}
+                    onChange={(e) =>
+                      setTxLog((p) => ({
+                        ...p,
+                        [e.target.id]: e.target.value,
+                      }))
+                    }
+                  />
+                </OverlayTrigger>
 
-              <Button variant="primary" type="submit">
-                Confirm
-              </Button>
-              <Button
-                variant="light"
-                onClick={() =>
-                  setTxLog({ action: true, coin: "", amount: 0.0, txdate: "" })
-                }
-              >
-                Cancel
-              </Button>
+                {/* Confirm / Cancel */}
+                <div className="d-inline ms-auto">
+                  <Button variant="primary" type="submit">
+                    Confirm
+                  </Button>
+                  <Button
+                    variant="light"
+                    onClick={() =>
+                      setTxLog({
+                        action: true,
+                        coin: "",
+                        amount: 0.0,
+                        txdate: "",
+                      })
+                    }
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </Card.Body>
             </Form>
-          </Card.Body>
+          </Card>
+
+          {/* Portfolio status */}
+          <Table dataSource={record} columns={columns} />
+        </div>
+
+        {/* Summary of coins */}
+        <Card>
+          <Card.Header>Total holdings</Card.Header>
+
+          {record.length ? (
+            <ListGroup
+              variant="flush"
+              style={{ minWidth: "12rem", height: "max-content" }}
+            >
+              {record
+                .sort((r1, r2) => r1.amount > r2.amount)
+                .map((r) => (
+                  <ListGroup.Item>
+                    <Tag>{r.action ? "LONG" : "SHORT"}</Tag>
+                    {r.coin} {r.amount}
+                  </ListGroup.Item>
+                ))}
+            </ListGroup>
+          ) : (
+            <div className="text-muted my-auto p-lg-1">
+              No holdings on record
+            </div>
+          )}
         </Card>
+        {/* </Card.Body>
+        </Card> */}
       </div>
-      <Table dataSource={record} columns={columns} />
     </div>
   );
 }
