@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { ListGroup, Form, Button } from "react-bootstrap";
 import Plot from "react-plotly.js";
 
-// import CSVs from "./frontend_dataset/CSVs";
 import AllCoins from "./frontend_dataset/summary.json";
 import data from "./frontend_dataset/AllPrices.json";
 
@@ -36,7 +35,6 @@ const colors = {
 const layout = {
   title: "Price History",
   xaxis: {
-    // autorange: true,
     range: ["2013-04-29", "2021-07-06"],
     rangeselector: {
       buttons: [
@@ -48,10 +46,7 @@ const layout = {
     rangeslider: { range: ["2013-04-29", "2021-07-06"] },
     type: "date",
   },
-  yaxis: {
-    autorange: true,
-    type: "log",
-  },
+  yaxis: { autorange: true, type: "log" },
   height: 600,
   width: "max-width",
 };
@@ -59,73 +54,55 @@ const layout = {
 export default function PricingHistory() {
   const [selectedCoins, setSelectedCoins] = useState([]); // the symbols of the checked coin
 
-  // useEffect(() => {
-  //   AllCoins.map((i) =>
-  //     Papa.parse(CSVs[i.Symbol], {
-  //       header: true,
-  //       download: true,
-  //       complete: (r) => {
-  //         if (r?.data) {
-  //           let temp = data;
-  //           temp[i.Symbol] = r.data;
-  //           setData(temp);
-  //         }
-  //       },
-  //     })
-  //   );
-  // }, []);
-
   return (
-    <>
-      <button onClick={() => console.log(data)}>What is data</button>
-      <div className="d-flex">
-        <div className="flex-grow-1">
-          <Plot
-            data={selectedCoins.map((coin) =>
-              Object({
-                x: data[coin].map((i) => i.Date),
-                y: data[coin].map((i) => i.Close),
-                yaxis: "10^y",
-                type: "line",
-                name: coin,
-                marker: { color: colors[coin] },
-              })
-            )}
-            layout={layout}
-          />
-        </div>
-
-        {/* Select your coin */}
-        <Form
-          onChange={(c) => {
-            console.log(c.target.id); // the coin symbol
-            setSelectedCoins(
-              (p) =>
-                p.includes(c.target.id) // if the updated item is in the array
-                  ? p.filter((i) => i !== c.target.id) // remove it from the
-                  : [...p, c.target.id] // add it to the array
-            );
-          }}
-        >
-          <ListGroup
-            variant="primary"
-            style={{ height: 400, overflowY: "scroll" }}
-            className="mb-3"
-          >
-            {AllCoins.map((i) => (
-              <ListGroup.Item>
-                <Form.Check
-                  className="text-start"
-                  type="checkbox"
-                  id={i.Symbol}
-                  label={`  ${i.Name} (${i.Symbol})`}
-                />
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-          <Button onClick={() => setSelectedCoins([])}>Uncheck all</Button>
-        </Form>
+    <div className="d-flex">
+      <div className="flex-grow-1 col-6 col-md-8">
+        <Plot
+          data={selectedCoins.map((coin) =>
+            Object({
+              x: data[coin].map((i) => i.Date),
+              y: data[coin].map((i) => i.Close),
+              yaxis: "10^y",
+              type: "line",
+              name: coin,
+              marker: { color: colors[coin] },
+            })
+          )}
+          layout={layout}
+        />
       </div>
-    </>
+
+      {/* Select your coin */}
+      <Form
+        className="col-5 col-md-3 mt-4"
+        onChange={(c) => {
+          console.log(c.target.id); // the coin symbol
+          setSelectedCoins(
+            (p) =>
+              p.includes(c.target.id) // if the updated item is in the array
+                ? p.filter((i) => i !== c.target.id) // remove it from the
+                : [...p, c.target.id] // add it to the array
+          );
+        }}
+      >
+        <ListGroup
+          variant="primary"
+          style={{ height: 400, overflowY: "scroll" }}
+          className="mb-3"
+        >
+          {AllCoins.map((i) => (
+            <ListGroup.Item>
+              <Form.Check
+                className="text-start"
+                type="checkbox"
+                id={i.Symbol}
+                label={`  ${i.Name} (${i.Symbol})`}
+              />
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+        <Button onClick={() => setSelectedCoins([])}>Uncheck all</Button>
+      </Form>
+    </div>
   );
 }

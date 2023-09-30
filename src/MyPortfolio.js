@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Form,
@@ -10,6 +10,7 @@ import {
   OverlayTrigger,
 } from "react-bootstrap";
 import { Table, Tag } from "antd";
+import Cookies from "js-cookie";
 
 import AllCoins from "./frontend_dataset/summary.json";
 import AllPrices from "./frontend_dataset/AllPrices.json";
@@ -18,12 +19,30 @@ function MyPortfolio() {
   const [record, setRecord] = useState([]);
   const [position, setPosition] = useState([]); // [[coin, amt], [coin, amount],...]
 
+  useEffect(() => {
+    const cookie = Cookies.get("record");
+    // console.log(cookie);
+    if (cookie) {
+      const jsoncookie = JSON.parse(cookie);
+      setRecord(jsoncookie); // update record from cookie data
+
+      // update position from cookie data
+      var tempPos = {};
+      for (var r of jsoncookie)
+        tempPos[r.coin] =
+          (tempPos[r.coin] || 0) + r.amount * (2 * r.action - 1);
+
+      setPosition(tempPos);
+    }
+  }, []);
+
   const [txLog, setTxLog] = useState({
     action: true, // buy: true, sell: false
     coin: "",
     amount: 0.0,
     txdate: "",
   });
+
   const columns = [
     { title: "Transaction Date", key: "date", dataIndex: "txdate" },
     {
@@ -44,6 +63,7 @@ function MyPortfolio() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // field data checking
     if (txLog.coin === "") alert("Please select your coin");
     else if (parseFloat(txLog.amount) <= 0.0 || isNaN(parseFloat(txLog.amount)))
       alert("Please enter a valid amount");
@@ -54,6 +74,7 @@ function MyPortfolio() {
         .includes(new Date(txLog.txdate).toDateString())
     )
       alert("Please enter a valid transaction date");
+    // update record and position and cookie after data checking
     else {
       var coin = txLog.coin;
       var txdate = new Date(txLog.txdate).toDateString();
@@ -63,10 +84,14 @@ function MyPortfolio() {
         )[0].Close
       );
       var amount = parseFloat(txLog.amount);
-      setRecord((p) => [
-        { action: txLog.action, coin, amount, txdate, priceUSD },
-        ...p,
-      ]);
+
+      // update record & cookie
+      setRecord((p) => {
+        const obj = { action: txLog.action, coin, amount, txdate, priceUSD };
+        Cookies.set("record", JSON.stringify([obj, ...p]));
+        return [obj, ...p];
+      });
+      // update position
       setPosition((p) => ({
         ...p,
         [coin]: (p[coin] || 0) + amount * (2 * txLog.action - 1),
@@ -84,7 +109,6 @@ function MyPortfolio() {
             <Form onSubmit={handleSubmit}>
               <Card.Body className="d-flex flex-wrap gap-3 p-4">
                 {/* Buy or sell */}
-
                 <ButtonGroup
                   onClick={(e) =>
                     setTxLog((p) => ({ ...p, action: e.target.id === "buy" }))
@@ -161,7 +185,7 @@ function MyPortfolio() {
                   />
                 </OverlayTrigger>
 
-                {/* Confirm / Cancel */}
+                {/* Confirm or Cancel */}
                 <div className="d-inline ms-auto">
                   <Button variant="primary" type="submit">
                     Confirm
@@ -184,7 +208,7 @@ function MyPortfolio() {
             </Form>
           </Card>
 
-          {/* Portfolio status */}
+          {/* Portfolio record */}
           <Table dataSource={record} columns={columns} />
         </div>
 
@@ -198,7 +222,7 @@ function MyPortfolio() {
               style={{ height: "max-content" }}
               className="d-flex flex-column align-items-center mw-100"
             >
-              {Object.entries(position) // [coin name, amt]
+              {Object.entries(position) // each coin is [coin name, amt]
                 .map(
                   (c) =>
                     c[1] !== 0.0 && (
@@ -222,10 +246,7 @@ function MyPortfolio() {
             </div>
           )}
         </Card>
-        {/* </Card.Body>
-        </Card> */}
       </div>
-      <Button onClick={() => console.log(record)}>Record</Button>
     </div>
   );
 }
