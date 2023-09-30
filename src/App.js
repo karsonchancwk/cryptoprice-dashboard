@@ -8,7 +8,7 @@ import MyPortfolio from "./MyPortfolio";
 function App() {
   return (
     <>
-      <div className="App" style={{ padding: "0px 10%" }}>
+      <div className="App col-11 col-lg-10 mx-auto">
         <Navbar />
         <Routes>
           <Route path="/" element={<PricingHistory />} />

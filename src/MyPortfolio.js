@@ -16,6 +16,7 @@ import AllPrices from "./frontend_dataset/AllPrices.json";
 
 function MyPortfolio() {
   const [record, setRecord] = useState([]);
+  const [position, setPosition] = useState([]); // [[coin, amt], [coin, amount],...]
 
   const [txLog, setTxLog] = useState({
     action: true, // buy: true, sell: false
@@ -38,11 +39,6 @@ function MyPortfolio() {
       key: "txrate",
       render: (r) => `1 ${r.coin} = ${r.priceUSD.toFixed(4)} USD`,
     },
-    // {
-    //   title: "Transaction Amount",
-    //   key: "txamt",
-    //   render: (r) => `${r.txAmtUSD.toFixed(4)} USD`,
-    // },
   ];
 
   const handleSubmit = async (e) => {
@@ -59,32 +55,29 @@ function MyPortfolio() {
     )
       alert("Please enter a valid transaction date");
     else {
+      var coin = txLog.coin;
       var txdate = new Date(txLog.txdate).toDateString();
       var priceUSD = parseFloat(
-        AllPrices[txLog.coin].filter(
+        AllPrices[coin].filter(
           (day) => new Date(day.Date).toDateString() === txdate
         )[0].Close
       );
       var amount = parseFloat(txLog.amount);
       setRecord((p) => [
-        {
-          action: txLog.action,
-          coin: txLog.coin,
-          amount,
-          txdate,
-          priceUSD,
-          // txAmtUSD: priceUSD * amount,
-        },
+        { action: txLog.action, coin, amount, txdate, priceUSD },
         ...p,
       ]);
+      setPosition((p) => ({
+        ...p,
+        [coin]: (p[coin] || 0) + amount * (2 * txLog.action - 1),
+      }));
     }
   };
 
   return (
     <div>
-      <div className="d-flex gap-4">
-        <Button onClick={() => console.log(record)}>Record</Button>
-        <div className="flex-grow-1">
+      <div className="d-flex justify-content-around">
+        <div className="col-6 col-sm-7 col-md-8">
           {/* Input field */}
           <Card className="mb-4">
             <Card.Header as="h5">Input your Buy&Sell Record</Card.Header>
@@ -196,25 +189,35 @@ function MyPortfolio() {
         </div>
 
         {/* Summary of coins */}
-        <Card>
+        <Card className="col-5 col-sm-4 col-md-3">
           <Card.Header>Total holdings</Card.Header>
 
           {record.length ? (
             <ListGroup
               variant="flush"
-              style={{ minWidth: "12rem", height: "max-content" }}
+              style={{ height: "max-content" }}
+              className="d-flex flex-column align-items-center mw-100"
             >
-              {record
-                .sort((r1, r2) => r1.amount > r2.amount)
-                .map((r) => (
-                  <ListGroup.Item>
-                    <Tag>{r.action ? "LONG" : "SHORT"}</Tag>
-                    {r.coin} {r.amount}
-                  </ListGroup.Item>
-                ))}
+              {Object.entries(position) // [coin name, amt]
+                .map(
+                  (c) =>
+                    c[1] !== 0.0 && (
+                      <ListGroup.Item
+                        className="px-auto mw-100"
+                        style={{ width: "-webkit-fill-available" }}
+                      >
+                        {c[1] > 0 ? (
+                          <Tag color="green">Long</Tag>
+                        ) : (
+                          <Tag color="red">Short</Tag>
+                        )}
+                        {c[0]} {Math.abs(c[1])}
+                      </ListGroup.Item>
+                    )
+                )}
             </ListGroup>
           ) : (
-            <div className="text-muted my-auto p-lg-1">
+            <div className="p-md-2 m-auto text-muted">
               No holdings on record
             </div>
           )}
@@ -222,6 +225,7 @@ function MyPortfolio() {
         {/* </Card.Body>
         </Card> */}
       </div>
+      <Button onClick={() => console.log(record)}>Record</Button>
     </div>
   );
 }
