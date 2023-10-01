@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/cryptoprice-dashboard/static/css/main.db575b2a.css",
+    "main.js": "/cryptoprice-dashboard/static/js/main.22c4ff6c.js",
+    "index.html": "/cryptoprice-dashboard/index.html",
+    "main.db575b2a.css.map": "/cryptoprice-dashboard/static/css/main.db575b2a.css.map",
+    "main.22c4ff6c.js.map": "/cryptoprice-dashboard/static/js/main.22c4ff6c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.db575b2a.css",
+    "static/js/main.22c4ff6c.js"
+  ]
+}
