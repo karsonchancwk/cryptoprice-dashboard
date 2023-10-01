@@ -1,6 +1,6 @@
-# Getting Started with Cryptocurrency Dashboard
+# Getting Started with Cryptoprice Dashboard
 
-This project was done by Chan Wing Kin Karson, an HKUST student studying TEMGL 4950 in Sept 2023. It serves to fulfill the assignment of Self-study Dashboard.
+This project was done by Chan Wing Kin Karson, an HKUST student studying TEMGL 4950 in Sept 2023. It serves to fulfill the assignment of Self-study Dashboard. The Deployed link can be found at https://karsonchancwk.github.io/cryptoprice-dashboard.
 
 ## App Walkthrough
 
